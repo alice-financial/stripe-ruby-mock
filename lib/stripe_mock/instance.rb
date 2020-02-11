@@ -26,6 +26,7 @@ module StripeMock
     include StripeMock::RequestHandlers::ExternalAccounts
     include StripeMock::RequestHandlers::AccountLinks
     include StripeMock::RequestHandlers::ExpressLoginLinks
+    include StripeMock::RequestHandlers::Persons # must be before Accounts
     include StripeMock::RequestHandlers::Accounts
     include StripeMock::RequestHandlers::Balance
     include StripeMock::RequestHandlers::BalanceTransactions
@@ -40,12 +41,15 @@ module StripeMock
     include StripeMock::RequestHandlers::Events
     include StripeMock::RequestHandlers::Invoices
     include StripeMock::RequestHandlers::InvoiceItems
+    include StripeMock::RequestHandlers::IssuingCardholders
+    include StripeMock::RequestHandlers::IssuingCards
     include StripeMock::RequestHandlers::Orders
     include StripeMock::RequestHandlers::Plans
     include StripeMock::RequestHandlers::Prices
     include StripeMock::RequestHandlers::Products
     include StripeMock::RequestHandlers::Refunds
     include StripeMock::RequestHandlers::Recipients
+    include StripeMock::RequestHandlers::Topups
     include StripeMock::RequestHandlers::Transfers
     include StripeMock::RequestHandlers::Tokens
     include StripeMock::RequestHandlers::CountrySpec
@@ -58,7 +62,7 @@ module StripeMock
     attr_reader :accounts, :balance, :balance_transactions, :bank_tokens, :charges, :coupons, :customers,
                 :disputes, :events, :invoices, :invoice_items, :orders, :payment_intents, :payment_methods,
                 :setup_intents, :plans, :prices, :recipients, :refunds, :transfers, :payouts, :subscriptions, :country_spec,
-                :subscriptions_items, :products, :tax_rates, :checkout_sessions
+                :subscriptions_items, :products, :tax_rates, :checkout_sessions, :persons, :topups, :cardholders, :issuing_cards
 
     attr_accessor :error_queue, :debug, :conversion_rate, :account_balance
 
@@ -69,6 +73,7 @@ module StripeMock
       @bank_tokens = {}
       @card_tokens = {}
       @customers = { Stripe.api_key => {} }
+      @cardholders = {}
       @charges = {}
       @payment_intents = {}
       @payment_methods = {}
@@ -78,10 +83,12 @@ module StripeMock
       @events = {}
       @invoices = {}
       @invoice_items = {}
+      @issuing_cards = {}
       @orders = {}
       @payment_methods = {}
       @plans = {}
       @prices = {}
+      @persons = {}
       @products = {}
       @recipients = {}
       @refunds = {}
@@ -92,6 +99,7 @@ module StripeMock
       @country_spec = {}
       @tax_rates = {}
       @checkout_sessions = {}
+      @topups = {}
 
       @debug = false
       @error_queue = ErrorQueue.new

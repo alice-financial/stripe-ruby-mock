@@ -1,6 +1,206 @@
 module StripeMock
   module Data
 
+    def self.mock_issuing_card(cardholder, params = {})
+      id = params[:id] || 'ic_1GAs1xC38dnJBVBrG6oX7Key'
+
+      name = params[:name] || cardholder[:name]
+      StripeMock::Util.rmerge({
+          id: id,
+          object: 'issuing.card',
+          authorization_controls:{
+              allowed_categories: [],
+              blocked_categories: [],
+              spending_limits: [],
+              spending_limits_currency: nil,
+              currency: nil,
+              max_amount: nil,
+              max_approvals: nil
+          },
+          brand: 'Visa',
+          cardholder: cardholder.dup,
+          created: 1581401733,
+          currency: 'usd',
+          exp_month: 1,
+          exp_year: 2023,
+          last4: '0070',
+          livemode: false,
+          metadata: {},
+          name: name,
+          pin: nil,
+          replacement_for: nil,
+          replacement_reason: nil,
+          shipping: nil,
+          status: 'inactive',
+
+                              }, params)
+    end
+
+    def self.mock_cardholder(params = {})
+      id = params[:id] || 'ich_1GAqP7C38dnJBVBrGXgHMeHA'
+      billing = params[:billing]
+      bname = billing[:name] || params[:name]
+      StripeMock::Util.rmerge({
+          id: id,
+          object: 'issuing.cardholder',
+          authorization_controls:{
+              allowed_categories: [],
+              blocked_categories: [],
+              spending_limits: [],
+              spending_limits_currency: nil
+          },
+          billing: {
+              name: bname
+          },
+          company: nil,
+          created: 1559079603,
+          email: nil,
+          individual: nil,
+          is_default: false,
+          livemode: false,
+          metadata: {},
+          phone_number: nil,
+          requirements: {
+              disabled_reason: nil,
+              past_due: []
+          },
+          status: 'active'
+      }, params)
+    end
+
+    def self.mock_topups(ids=[])
+      topups = {}
+      ids.each do |id|
+        topups[id] = self.mock_topup(id: id, amount: rand(100..100000), destination_balance: "issuing")
+      end
+      topups
+    end
+
+    def self.mock_topup(params = {})
+      id = params[:id] || 'tu_1G1j0YJPLY370EMk0Kzvtuka'
+      {
+          id: id,
+          object: "topup",
+          amount: params[:amount],
+          balance_transaction: nil,
+          created: 1580318927,
+          currency: "usd",
+          description: nil,
+          destination_balance: params[:destination_balance],
+          expected_availability_date: 1580318928,
+          failure_code: nil,
+          failure_message: nil,
+          livemode: false,
+          metadata: {},
+          source: {
+              id: "src_1G6KLLAZGJUpBuEwJxgGjJ8A",
+              object: "source",
+              ach_debit: {
+                  country: "US",
+                  type: "individual",
+                  routing_number: "110000000",
+                  last4: "6789",
+                  fingerprint: "zNYJqSxUWThCgk2Q",
+                  bank_name: "STRIPE TEST BANK"
+              },
+              amount: nil,
+              client_secret: "src_client_secret_XdbY9ttwepfTFnEjjo9",
+              code_verification: {
+                  attempts_remaining: 10,
+                  status: "succeeded"
+              },
+              created: 1580318927,
+              currency: "usd",
+              flow: "code_verification",
+              livemode: false,
+              metadata: {},
+              owner: {
+                  address: {
+                      city: nil,
+                      country: "US",
+                      line1: nil,
+                      line2: nil,
+                      postal_code: nil,
+                      state: nil
+                  },
+                  email: nil,
+                  name: "Jenny Rosen",
+                  phone: nil,
+                  verified_address: nil,
+                  verified_email: nil,
+                  verified_name: nil,
+                  verified_phone: nil
+              },
+              statement_descriptor: nil,
+              status: "chargeable",
+              type: "ach_debit",
+              usage: "reusable"
+          },
+          statement_descriptor: nil,
+          status: "pending",
+          transfer_group: nil
+      }.merge(params)
+    end
+
+    def self.mock_person(account, params = {})
+      id = params[:id] || 'person_103ED82ePvKYlo2C'
+      {
+          id: id,
+          object: 'person',
+          account: account[:id],
+          address: {
+              line1: nil,
+              line2: nil,
+              city: nil,
+              state: nil,
+              postal_code: nil,
+              country: "US"
+          },
+          created: 1579735054,
+          dob: {
+              day: nil,
+              month: nil,
+              year: nil
+          },
+          first_name: nil,
+          id_number_provided: false,
+          last_name: nil,
+          metadata: {},
+          relationship: {
+              director: false,
+              executive: false,
+              owner: false,
+              percent_ownership: false,
+              representative: false,
+              title: nil
+          },
+          requirements:{
+              currently_due: [],
+              eventually_due: [],
+              past_due: [],
+              pending_verification: []
+          },
+          ssn_last_4_provided: !params.delete(:ssn_last_4).nil?,
+          verification:{
+              additional_document:{
+                  back: nil,
+                  details: nil,
+                  details_code: nil,
+                  front: nil
+              },
+              details: nil,
+              details_code: nil,
+              document: {
+                  back: nil,
+                  details: nil,
+                  details_code: nil,
+                  front: nil
+              },
+              status: 'unverified'
+          }
+      }.merge(params)
+    end
+
     def self.mock_account(params = {})
       id = params[:id] || 'acct_103ED82ePvKYlo2C'
       currency = params[:currency] || StripeMock.default_currency
