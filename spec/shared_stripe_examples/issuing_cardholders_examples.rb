@@ -2,7 +2,7 @@ require 'spec_helper'
 
 shared_examples 'Issuing Cardholders API' do
   let(:params){{
-      type: 'virtual',
+      type: 'individual',
       name: 'Bo Diddley',
       billing: {
           address: {
