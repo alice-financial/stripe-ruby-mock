@@ -60,4 +60,14 @@ shared_examples 'Balance Transaction API' do
     expect(transfer_transactions.map &:id).to include(new_txn_id, existing_txn_id)
   end
 
+  it "can create a customer credit balance" do
+    customer = Stripe::Customer.create({
+      email: 'johnny@appleseed.com',
+      description: "a description"
+    })
+    txn = Stripe::Customer.create_balance_transaction(customer.id, {amount: 500, currency: "usd"})
+    expect(txn.id).to match(/cbtxn_/)
+    expect(txn.amount).to eql(500)
+    expect(txn.customer).to eql(customer.id)
+  end
 end

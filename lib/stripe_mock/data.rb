@@ -1227,6 +1227,25 @@ module StripeMock
       bts
     end
 
+    def self.mock_customer_balance_transaction(params = {})
+      currency = params[:currency] || StripeMock.default_currency
+      bt_id = params[:id] || 'cbtxn_default'
+      {
+        id: bt_id,
+        object: "customer_balance_transaction",
+        amount: -10000,
+        created: 1461880226,
+        credit_note: nil,
+        currency: currency,
+        customer: params[:customer_id],
+        description: nil,
+        ending_balance: -10000,
+        invoice: nil,
+        metadata: {},
+        type: "adjustment"
+      }.merge(params)
+    end
+
     def self.mock_balance_transaction(params = {})
       currency = params[:currency] || StripeMock.default_currency
       bt_id = params[:id] || 'test_txn_default'
