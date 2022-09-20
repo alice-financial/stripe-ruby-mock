@@ -592,6 +592,7 @@ module StripeMock
         charge: nil,
         discount: nil,
         subscription: nil,
+        auto_advance: false,
         status_transitions: {
           finalized_at: nil,
           marked_uncollectible_at: nil,
