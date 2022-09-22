@@ -598,7 +598,8 @@ module StripeMock
           marked_uncollectible_at: nil,
           paid_at: nil,
           voided_at: nil
-        }
+        },
+        number: "6C41730-0001"
       }.merge(params)
       if invoice[:discount]
         invoice[:total] = [0, invoice[:subtotal] - invoice[:discount][:coupon][:amount_off]].max if invoice[:discount][:coupon][:amount_off]

@@ -28,6 +28,12 @@ shared_examples 'Invoice API' do
       invoice = Stripe::Invoice.retrieve(original.id)
       expect(invoice.status_transitions).to be
     end
+
+    it "supports invoice number" do
+      original = Stripe::Invoice.create
+      invoice = Stripe::Invoice.retrieve(original.id)
+      expect(invoice.number).to be
+    end
   end
 
   context "updating an invoice" do
