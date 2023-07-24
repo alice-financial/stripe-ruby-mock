@@ -1316,7 +1316,7 @@ module StripeMock
       }.merge(params)
     end
 
-    def self.mock_ephemeral_key(**params)
+    def self.mock_ephemeral_key(params)
       created = Time.now.to_i
       expires = created + 34_000
       {

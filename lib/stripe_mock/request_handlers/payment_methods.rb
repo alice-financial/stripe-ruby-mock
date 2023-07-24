@@ -85,7 +85,8 @@ module StripeMock
 
         if payment_method[:customer].nil?
           raise Stripe::InvalidRequestError.new(
-            'You must save this PaymentMethod to a customer before you can update it.',
+            'You must save this PaymentMethod to a customer before you can update it.', 
+            nil,
             http_status: 400
           )
         end
@@ -104,6 +105,7 @@ module StripeMock
         if invalid_type?(params[:type])
           raise Stripe::InvalidRequestError.new(
             'Invalid type: must be one of card or card_present',
+            nil,
             http_status: 400
           )
         end
