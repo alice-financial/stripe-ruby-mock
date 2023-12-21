@@ -39,6 +39,21 @@ shared_examples 'Account API' do
       expect(account.external_accounts.url).to match /\/v1\/accounts\/.*\/external_accounts/
     end
   end
+
+  describe 'create custom account' do
+    it 'creates one more account' do
+      account = Stripe::Account.create(email: 'lol@what.com', type: "custom")
+
+      expect(account).to be_a Stripe::Account
+    end
+
+    it 'includes data specific to custom accounts' do
+      account = Stripe::Account.create(type: "custom")
+
+      expect(account.capabilities).to be
+    end
+  end
+
   describe 'updates account' do
     it 'updates account' do
       account = Stripe::Account.retrieve

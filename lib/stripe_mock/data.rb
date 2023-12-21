@@ -194,102 +194,157 @@ module StripeMock
     end
 
     def self.mock_account(params = {})
+      if params[:type].to_s == "custom"
+        mock_custom_account(params)
+      else
+        id = params[:id] || 'acct_103ED82ePvKYlo2C'
+        currency = params[:currency] || StripeMock.default_currency
+        {
+          id: id,
+          email: "bob@example.com",
+          statement_descriptor: nil,
+          display_name: "Stripe.com",
+          timezone: "US/Pacific",
+          details_submitted: false,
+          charges_enabled: false,
+          payouts_enabled: false,
+          currencies_supported: [
+            "usd"
+          ],
+          default_currency: currency,
+          country: "US",
+          object: "account",
+          business_name: "Stripe.com",
+          business_url: nil,
+          support_phone: nil,
+          managed: false,
+          product_description: nil,
+          debit_negative_balances: true,
+          bank_accounts: {
+            object: "list",
+            total_count: 0,
+            has_more: false,
+            url: "/v1/accounts/#{id}/bank_accounts",
+            data: [
+
+            ]
+          },
+          verification: {
+            fields_needed: [],
+            due_by: nil,
+            contacted: false
+          },
+          transfer_schedule: {
+            delay_days: 7,
+            interval: "daily"
+          },
+          tos_acceptance: {
+            ip: nil,
+            date: nil,
+            user_agent: nil
+          },
+          external_accounts: {
+              object: "list",
+              data: [
+
+              ],
+              has_more: false,
+              total_count: 0,
+              url: "/v1/accounts/#{id}/external_accounts"
+          },
+          legal_entity: {
+            type: nil,
+            business_name: nil,
+            address: {
+              line1: nil,
+              line2: nil,
+              city: nil,
+              state: nil,
+              postal_code: nil,
+              country: "US"
+            },
+            first_name: nil,
+            last_name: nil,
+            personal_address: {
+              line1: nil,
+              line2: nil,
+              city: nil,
+              state: nil,
+              postal_code: nil,
+              country: nil
+            },
+            dob: {
+              day: nil,
+              month: nil,
+              year: nil
+            },
+            additional_owners: nil,
+            verification: {
+              status: "unverified",
+              document: nil,
+              details: nil
+            }
+          },
+          decline_charge_on: {
+            cvc_failure: false,
+            avs_failure: false
+          },
+          keys: {
+            secret: "sk_test_AmJhMTLPtY9JL4c6EG0",
+            publishable: "pk_test_2rSaMTLPtY9JL449dsf"
+          }
+        }.merge(params)
+      end
+    end
+
+    def self.mock_custom_account(params = {})
       id = params[:id] || 'acct_103ED82ePvKYlo2C'
+      name = params[:name] || "Test Company"
       currency = params[:currency] || StripeMock.default_currency
       {
         id: id,
-        email: "bob@example.com",
-        statement_descriptor: nil,
-        display_name: "Stripe.com",
-        timezone: "US/Pacific",
-        details_submitted: false,
-        charges_enabled: false,
-        payouts_enabled: false,
-        currencies_supported: [
-          "usd"
-        ],
-        default_currency: currency,
-        country: "US",
         object: "account",
-        business_name: "Stripe.com",
-        business_url: nil,
-        support_phone: nil,
-        managed: false,
-        product_description: nil,
-        debit_negative_balances: true,
-        bank_accounts: {
-          object: "list",
-          total_count: 0,
-          has_more: false,
-          url: "/v1/accounts/#{id}/bank_accounts",
-          data: [
-
-          ]
-        },
-        verification: {
-          fields_needed: [],
-          due_by: nil,
-          contacted: false
-        },
-        transfer_schedule: {
-          delay_days: 7,
-          interval: "daily"
-        },
-        tos_acceptance: {
-          ip: nil,
-          date: nil,
-          user_agent: nil
-        },
-        external_accounts: {
-            object: "list",
-            data: [
-
-            ],
-            has_more: false,
-            total_count: 0,
-            url: "/v1/accounts/#{id}/external_accounts"
-        },
-        legal_entity: {
-          type: nil,
-          business_name: nil,
+        business_profile: {mcc: "5734", name: name, product_description: "good things", support_address: nil, support_email: nil, support_phone: nil, support_url: nil, url: "https://accessible.stripe.com"},
+        business_type: "company",
+        capabilities: {card_issuing: "active", card_payments: "active", transfers: "active", treasury: "active", us_bank_account_ach_payments: "active"},
+        charges_enabled: true,
+        company: {
           address: {
-            line1: nil,
-            line2: nil,
-            city: nil,
-            state: nil,
-            postal_code: nil,
-            country: "US"
+            city: "Spotswood", country: "US", line1: "address_full_match", line2: nil, postal_code: "08884", state: "NJ"
           },
-          first_name: nil,
-          last_name: nil,
-          personal_address: {
-            line1: nil,
-            line2: nil,
-            city: nil,
-            state: nil,
-            postal_code: nil,
-            country: nil
-          },
-          dob: {
-            day: nil,
-            month: nil,
-            year: nil
-          },
-          additional_owners: nil,
+          directors_provided: false,
+          executives_provided: true,
+          name: name,
+          owners_provided: true,
+          phone: "+10000000000",
+          structure: "sole_proprietorship",
+          tax_id_provided: true,
           verification: {
-            status: "unverified",
-            document: nil,
-            details: nil
+            document: {back: nil, details: nil, details_code: nil, front: nil}
           }
         },
-        decline_charge_on: {
-          cvc_failure: false,
-          avs_failure: false
-        },
-        keys: {
-          secret: "sk_test_AmJhMTLPtY9JL4c6EG0",
-          publishable: "pk_test_2rSaMTLPtY9JL449dsf"
-        }
+        country: "US",
+        created: 1703121394,
+        default_currency: currency,
+        details_submitted: true,
+        email: nil,
+        external_accounts: {object: "list", data: [], has_more: false, total_count: 0, url: "/v1/accounts/#{id}/external_accounts"},
+        future_requirements: {alternatives: [], current_deadline: 1712084400, currently_due: ["external_account"], disabled_reason: nil, errors: [], eventually_due: ["external_account"], past_due: ["external_account"], pending_verification: []},
+        metadata: {},
+        payouts_enabled: false,
+        requirements: {alternatives: [], current_deadline: nil, currently_due: ["external_account"], disabled_reason: "requirements.past_due", errors: [], eventually_due: ["external_account"], past_due: ["external_account"], pending_verification: []},
+        settings: {
+          bacs_debit_payments: {display_name: nil, service_user_number: nil},
+          branding: {icon: nil, logo: nil, primary_color: nil, secondary_color: nil},
+          card_issuing: {tos_acceptance: {date: nil, ip: nil}},
+          card_payments: {decline_on: {avs_failure: false, cvc_failure: false}, statement_descriptor_prefix: "TEST CO", statement_descriptor_prefix_kana: nil, statement_descriptor_prefix_kanji: nil},
+          dashboard: {display_name: "accessible.stripe", timezone: "Etc/UTC"},
+          payments: {statement_descriptor: "TEST COMPANY", statement_descriptor_kana: nil, statement_descriptor_kanji: nil},
+          payouts: {debit_negative_balances: false, schedule: {delay_days: 2, interval: "daily"}, statement_descriptor: nil},
+          sepa_debit_payments: {},
+          treasury: {tos_acceptance: {date: nil, ip: nil}}},
+        tos_acceptance: {date: nil, ip: nil, user_agent: nil},
+        type: "custom"
       }.merge(params)
     end
 
