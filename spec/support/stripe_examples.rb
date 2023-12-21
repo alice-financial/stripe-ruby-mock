@@ -4,6 +4,7 @@ def require_stripe_examples
 end
 
 def it_behaves_like_stripe(&block)
+  it_behaves_like 'Treasury Financial Account API', &block
   it_behaves_like 'Account API', &block
   it_behaves_like 'Balance API', &block
   it_behaves_like 'Balance Transaction API', &block
