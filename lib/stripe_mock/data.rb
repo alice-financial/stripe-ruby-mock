@@ -348,6 +348,28 @@ module StripeMock
       }.merge(params)
     end
 
+    def self.mock_treasury_financial_account(params = {})
+      id = params[:id] || 'fa_1OPsZaPscJd8ZAGIUxkSG4zh'
+      supported_currencies = params[:supported_currencies] || [StripeMock.default_currency]
+      {
+        id: id,
+        object: "treasury.financial_account",
+        active_features: ["inbound_transfers.ach", "card_issuing", "outbound_payments.ach", "outbound_payments.us_domestic_wire", "financial_addresses.aba", "deposit_insurance", "intra_stripe_flows", "outbound_transfers.ach", "outbound_transfers.us_domestic_wire"],
+        balance: {cash: {usd: 0}, inbound_pending: {usd: 0}, outbound_pending: {usd: 0}},
+        country: "US",
+        created: 1703189426,
+        financial_addresses: [{aba: {account_holder_name: "Bart's People", account_number_last4: "4300", bank_name: "Stripe Test Bank", routing_number: "000000001"}, supported_networks: ["ach", "us_domestic_wire"], type: "aba"}],
+        livemode: false,
+        metadata: {},
+        pending_features: [],
+        platform_restrictions: {inbound_flows: "unrestricted", outbound_flows: "unrestricted"},
+        restricted_features: [],
+        status: "open",
+        status_details: {closed: nil},
+        supported_currencies: supported_currencies
+      }.merge(params)
+    end
+
     def self.mock_tax_rate(params)
       {
         id: 'test_cus_default',
