@@ -9,4 +9,6 @@ group :test do
   gem 'rake'
 end
 
+gem "byebug"
+
 gemspec
