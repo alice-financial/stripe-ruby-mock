@@ -1463,29 +1463,80 @@ module StripeMock
     end
 
     def self.mock_payment_method(params = {})
-      payment_method_id = params[:id] || "pm_1ExEuFL2DI6wht39WNJgbybl"
-      {
-          id: payment_method_id,
-          object: "payment_method",
-          type: "card",
-          billing_details: {},
-          card: {
-              brand: "visa",
-              checks: { address_line1_check: nil, address_postal_code_check: nil, cvc_check: "pass" },
-              country: "FR",
-              exp_month: 2,
-              exp_year: 2022,
-              fingerprint: "Hr3Ly5z5IYxsokWA",
-              funding: "credit",
-              last4: "3155",
-              three_d_secure_usage: { supported: true }
+      payment_method_id = params[:id] || 'pm_1ExEuFL2DI6wht39WNJgbybl'
+      type = params[:type].to_sym
+      data = {
+        card: {
+          brand: case params.dig(:card, :number)&.to_s
+          when /^4/, nil
+            'visa'
+          when /^5[1-5]/
+            'mastercard'
+          else
+            'unknown'
+          end,
+          checks: {
+            address_line1_check: nil,
+            address_postal_code_check: nil,
+            cvc_check: 'pass'
           },
-          customer: params[:customer] || nil,
-          metadata: {
-            order_id: "123456789"
-          }
+          country: 'FR',
+          exp_month: params.dig(:card, :exp_month) || 2,
+          exp_year: params.dig(:card, :exp_year) || 2022,
+          fingerprint: 'Hr3Ly5z5IYxsokWA',
+          funding: 'credit',
+          generated_from: nil,
+          last4: params.dig(:card, :number)&.[](-4..) || '3155',
+          three_d_secure_usage: { supported: true },
+          wallet: nil
+        },
+        ideal: {
+          bank: 'ing',
+          bic: 'INGBNL2A',
+          iban_last4: '****',
+          verified_name: 'JENNY ROSEN'
+        },
+        sepa_debit: {
+          bank_code: '37040044',
+          branch_code: '',
+          country: 'DE',
+          fingerprint: 'FD81kbVPe7M05BMj',
+          last4: params.dig(:sepa_debit, :iban)&.[](-4..) || '3000'
+        },
+        us_bank_account: {
+          account_holder_type: "individual",
+          account_type: "checking",
+          bank_name: "STRIPE TEST BANK",
+          financial_connections_account: "fca_0614042384b19afec4474940",
+          fingerprint: "7bc48d016359a45a",
+          last4: "6789",
+          networks: {"preferred"=>"ach", "supported"=>["ach"]},
+          routing_number: "110000000"
+        }
+      }
 
-      }.merge(params)
+      {
+        id: payment_method_id,
+        object: 'payment_method',
+        type: params[:type],
+        billing_details: {
+          address: {
+            city: 'New Orleans',
+            country: 'US',
+            line1: 'Bourbon Street 23',
+            line2: nil,
+            postal_code: '10000',
+            state: nil
+          },
+          email: 'foo@bar.com',
+          name: 'John Dolton',
+          phone: nil
+        },
+        customer: params[:customer] || nil,
+        metadata: {
+          order_id: '123456789'
+        }
+      }.merge(params).merge(type => data[type])
     end
 
     def self.mock_setup_intent(params = {})
