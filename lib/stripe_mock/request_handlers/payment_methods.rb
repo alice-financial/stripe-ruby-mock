@@ -78,6 +78,10 @@ module StripeMock
       # post /v1/payment_methods/:id
       def update_payment_method(route, method_url, params, headers)
         allowed_params = [:billing_details, :card, :metadata]
+        disallowed_params = params.keys - allowed_params
+        unless disallowed_params.empty?
+          raise Stripe::InvalidRequestError.new("Received unknown parameter: #{disallowed_params.first}", disallowed_params.first)
+        end
 
         id = method_url.match(route)[1]
 
@@ -85,7 +89,7 @@ module StripeMock
 
         if payment_method[:customer].nil?
           raise Stripe::InvalidRequestError.new(
-            'You must save this PaymentMethod to a customer before you can update it.', 
+            'You must save this PaymentMethod to a customer before you can update it.',
             nil,
             http_status: 400
           )
@@ -112,8 +116,14 @@ module StripeMock
       end
 
       def invalid_type?(type)
-        !['card', 'card_present'].include?(type)
+        !%w(card ideal sepa_debit).include?(type)
+        !valid_types.include?(type)
       end
+
+      def valid_types
+        %w(card ideal sepa_debit us_bank_account)
+      end
+
     end
   end
 end

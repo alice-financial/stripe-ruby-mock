@@ -25,6 +25,22 @@ shared_examples 'PaymentMethod API' do
       cvc: 999
     }
   end
+  let(:visa_card_details) do
+    card_details
+  end
+  let(:mastercard_card_details) do
+    card_details.merge(:number => 5555_5555_5555_4444)
+  end
+  let(:sepa_debit_details) do
+    {
+      iban: 'DE89370400440532013000'
+    }
+  end
+  let(:ideal_details) do
+    {
+      bank: 'bunq'
+    }
+  end
 
   # post /v1/payment_methods
   describe 'Create a PaymentMethod', live: true do
@@ -158,27 +174,74 @@ shared_examples 'PaymentMethod API' do
   # post /v1/payment_methods/:id
   describe 'Update a PaymentMethod', live: true do
     let(:customer) { Stripe::Customer.create }
-    let(:payment_method) do
-      Stripe::PaymentMethod.create(type: 'card', card: card_details)
-    end
-
-    it 'updates the card for the payment method' do
-      Stripe::PaymentMethod.attach(payment_method.id, customer: customer.id)
-
-      original_card_exp_month = payment_method.card.exp_month
-      new_card_exp_month = 12
-
-      expect do
-        Stripe::PaymentMethod.update(payment_method.id, card: { exp_month: new_card_exp_month })
-      end.to change { Stripe::PaymentMethod.retrieve(payment_method.id).card.exp_month }
-        .from(original_card_exp_month).to(new_card_exp_month)
-    end
-
-    context 'without a customer' do
-      it 'raises invalid requestion exception' do
+    context 'with credit card' do
+      let(:payment_method) do
+        Stripe::PaymentMethod.create(type: 'card', card: card_details)
+      end
+      it 'updates the card for the payment method' do
+        Stripe::PaymentMethod.attach(payment_method.id, customer: customer.id)
+        original_card_exp_month = payment_method.card.exp_month
+        new_card_exp_month = 12
         expect do
-          Stripe::PaymentMethod.update(payment_method.id, card: { exp_month: 12 })
+          Stripe::PaymentMethod.update(payment_method.id, card: { exp_month: new_card_exp_month })
+        end.to change { Stripe::PaymentMethod.retrieve(payment_method.id).card.exp_month }
+          .from(original_card_exp_month).to(new_card_exp_month)
+      end
+      context 'without a customer' do
+        it 'raises invalid requestion exception' do
+          expect do
+            Stripe::PaymentMethod.update(payment_method.id, card: { exp_month: 12 })
+          end.to raise_error(Stripe::InvalidRequestError)
+        end
+      end
+    end
+    context 'with visa card' do
+      let(:payment_method) do
+        Stripe::PaymentMethod.create(type: 'card', card: visa_card_details)
+      end
+      it 'uses correct brand' do
+        expect(payment_method.card.brand).to eq('visa')
+      end
+    end
+    context 'with mastercard card' do
+      let(:payment_method) do
+        Stripe::PaymentMethod.create(type: 'card', card: mastercard_card_details)
+      end
+      it 'uses correct brand' do
+        expect(payment_method.card.brand).to eq('mastercard')
+      end
+    end
+    context 'with ideal' do
+      let(:payment_method) do
+        Stripe::PaymentMethod.create(type: 'ideal', ideal: ideal_details)
+      end
+      it 'cannot update' do
+        Stripe::PaymentMethod.attach(payment_method.id, customer: customer.id)
+        new_ideal_bank = 12
+        expect do
+          Stripe::PaymentMethod.update(payment_method.id, ideal: { bank: new_ideal_bank })
         end.to raise_error(Stripe::InvalidRequestError)
+      end
+    end
+    context 'with sepa debit' do
+      let(:payment_method) do
+        Stripe::PaymentMethod.create(type: 'sepa_debit', sepa_debit: sepa_debit_details)
+      end
+      it 'cannot update' do
+        Stripe::PaymentMethod.attach(payment_method.id, customer: customer.id)
+        expect do
+          Stripe::PaymentMethod.update(payment_method.id, sepa_debit: { iban: 'DE62370400440532013001'})
+        end.to raise_error(Stripe::InvalidRequestError)
+      end
+    end
+
+    context 'with us_bank_account' do
+      let(:payment_method) do
+        Stripe::PaymentMethod.create(type: 'us_bank_account')
+      end
+
+      it 'works' do
+        expect(payment_method.type).to eq('us_bank_account')
       end
     end
   end
