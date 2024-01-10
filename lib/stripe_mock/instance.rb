@@ -49,6 +49,7 @@ module StripeMock
     include StripeMock::RequestHandlers::Recipients
     include StripeMock::RequestHandlers::Topups
     include StripeMock::RequestHandlers::Transfers
+    include StripeMock::RequestHandlers::TreasuryInboundTransfers
     include StripeMock::RequestHandlers::Tokens
     include StripeMock::RequestHandlers::CountrySpec
     include StripeMock::RequestHandlers::Payouts
@@ -60,7 +61,7 @@ module StripeMock
                 :disputes, :events, :invoices, :invoice_items, :orders, :payment_intents, :payment_methods,
                 :setup_intents, :plans, :recipients, :refunds, :transfers, :payouts, :subscriptions, :country_spec,
                 :subscriptions_items, :products, :tax_rates, :checkout_sessions, :persons, :topups, :cardholders, :issuing_cards,
-                :treasury_financial_accounts
+                :treasury_financial_accounts, :treasury_inbound_transfers
 
     attr_accessor :error_queue, :debug, :conversion_rate, :account_balance
 
@@ -91,6 +92,7 @@ module StripeMock
       @recipients = {}
       @refunds = {}
       @transfers = {}
+      @treasury_inbound_transfers = {}
       @payouts = {}
       @subscriptions = {}
       @subscriptions_items = {}
