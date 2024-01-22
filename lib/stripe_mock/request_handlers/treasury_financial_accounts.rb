@@ -20,7 +20,15 @@ module StripeMock
         route =~ method_url
         init_treasury_financial_account
         id = $1 || treasury_financial_accounts.keys[0]
-        assert_existence :treasury_financial_account, id, treasury_financial_accounts[id]
+        acct = treasury_financial_accounts[id]
+        assert_existence :treasury_financial_account, id, acct
+        if params && params[:expand] && params[:expand].include?("financial_addresses.aba.account_number")
+          acct
+        else
+          sanitized_acct = acct
+          sanitized_acct[:financial_addresses].first[:aba].delete(:account_number)
+          sanitized_acct
+        end
       end
 
       def update_treasury_financial_account(route, method_url, params, headers)

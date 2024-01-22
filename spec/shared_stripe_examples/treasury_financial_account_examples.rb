@@ -9,6 +9,27 @@ shared_examples 'Treasury Financial Account API' do
       expect(account).to be_a Stripe::Treasury::FinancialAccount
       expect(account.id).to match /fa\_/
     end
+
+    it 'by default excludes account number from response' do
+      new_account = Stripe::Treasury::FinancialAccount.create
+      account = Stripe::Treasury::FinancialAccount.retrieve(new_account.id)
+
+      expect(account).to be_a Stripe::Treasury::FinancialAccount
+      expect(account.financial_addresses.first.aba.respond_to?(:account_number)).to be false
+    end
+
+    it 'can optionally also return account number' do
+      new_account = Stripe::Treasury::FinancialAccount.create
+      params = {
+        id: new_account.id,
+        expand: ["financial_addresses.aba.account_number"]
+      }
+      account = Stripe::Treasury::FinancialAccount.retrieve(params, {})
+
+      expect(account).to be_a Stripe::Treasury::FinancialAccount
+      expect(account.financial_addresses.first.aba.account_number).to eql("012344300")
+    end
+
     it 'retrieves all' do
       accounts = Stripe::Treasury::FinancialAccount.list
 
