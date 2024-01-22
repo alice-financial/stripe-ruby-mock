@@ -358,7 +358,7 @@ module StripeMock
         balance: {cash: {usd: 0}, inbound_pending: {usd: 0}, outbound_pending: {usd: 0}},
         country: "US",
         created: 1703189426,
-        financial_addresses: [{aba: {account_holder_name: "Bart's People", account_number_last4: "4300", bank_name: "Stripe Test Bank", routing_number: "000000001"}, supported_networks: ["ach", "us_domestic_wire"], type: "aba"}],
+        financial_addresses: [{aba: {account_holder_name: "Bart's People", account_number: "012344300", account_number_last4: "4300", bank_name: "Stripe Test Bank", routing_number: "000000001"}, supported_networks: ["ach", "us_domestic_wire"], type: "aba"}],
         livemode: false,
         metadata: {},
         pending_features: [],
