@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-shared_examples 'Treasury Inbound Transfer API' do
+shared_examples 'Treasury Outbound Transfer API' do
 
   let(:financial_account) do 
     Stripe::Treasury::FinancialAccount.create({
@@ -24,8 +24,8 @@ shared_examples 'Treasury Inbound Transfer API' do
   end
   let(:payment_method) { Stripe::PaymentMethod.create(type: "us_bank_account") }
 
-  it "creates a Treasury Inbound Transfer" do
-    transfer = Stripe::Treasury::InboundTransfer.create({
+  it "creates a Treasury Outbound Transfer" do
+    transfer = Stripe::Treasury::OutboundTransfer.create({
       financial_account: financial_account.id,
       amount: 100,
       currency: 'usd',
@@ -33,7 +33,7 @@ shared_examples 'Treasury Inbound Transfer API' do
       description: "a cool transfer"
     })
 
-    expect(transfer.id).to match /^test_ibt/
+    expect(transfer.id).to match /^test_obt/
     expect(transfer.amount).to eq(100)
     expect(transfer.created).to eq(1304114826)
     expect(transfer.currency).to eq('usd')
@@ -42,13 +42,13 @@ shared_examples 'Treasury Inbound Transfer API' do
     expect(transfer.origin_payment_method).to eq(payment_method.id)
     expect(transfer.livemode).to eq(false)
     expect(transfer.metadata).to eq(Stripe::StripeObject.new)
-    expect(transfer.returned).to eq(false)
+    expect(transfer.returned_details).to be_nil
   end
 
-  describe "listing treasury inbound transfers" do
+  describe "listing treasury outbound transfers" do
     before do
       3.times do
-        Stripe::Treasury::InboundTransfer.create({
+        Stripe::Treasury::OutboundTransfer.create({
           financial_account: financial_account.id,
           amount: 100,
           currency: 'usd',
@@ -58,16 +58,16 @@ shared_examples 'Treasury Inbound Transfer API' do
       end
     end
 
-    it "without params retrieves all treasury inbound transfers" do
-      expect(Stripe::Treasury::InboundTransfer.list(financial_account: financial_account.id).count).to eq(3)
+    it "without params retrieves all treasury outbound transfers" do
+      expect(Stripe::Treasury::OutboundTransfer.list(financial_account: financial_account.id).count).to eq(3)
     end
 
     it "accepts a limit param" do
-      expect(Stripe::Treasury::InboundTransfer.list(financial_account: financial_account.id, limit: 2).count).to eq(2)
+      expect(Stripe::Treasury::OutboundTransfer.list(financial_account: financial_account.id, limit: 2).count).to eq(2)
     end
 
     it "disallows unknown parameters" do
-      expect { Stripe::Treasury::InboundTransfer.list(recipient: "foo") }.to raise_error {|e|
+      expect { Stripe::Treasury::OutboundTransfer.list(recipient: "foo") }.to raise_error {|e|
         expect(e).to be_a Stripe::InvalidRequestError
         expect(e.param).to eq("recipient")
         expect(e.message).to eq("Received unknown parameter: recipient")
@@ -77,14 +77,14 @@ shared_examples 'Treasury Inbound Transfer API' do
   end
 
   it "retrieves a stripe transfer" do
-    original = Stripe::Treasury::InboundTransfer.create({
+    original = Stripe::Treasury::OutboundTransfer.create({
       financial_account: financial_account.id,
       amount: 100,
       currency: 'usd',
       origin_payment_method: payment_method.id,
       description: "a cool transfer"
     })
-    transfer = Stripe::Treasury::InboundTransfer.retrieve(original.id)
+    transfer = Stripe::Treasury::OutboundTransfer.retrieve(original.id)
 
 
     expect(transfer.id).to eq(original.id)
@@ -95,24 +95,24 @@ shared_examples 'Treasury Inbound Transfer API' do
     expect(transfer.description).to eq(original.description)
     expect(transfer.livemode).to eq(original.livemode)
     expect(transfer.metadata).to eq(original.metadata)
-    expect(transfer.returned).to eq(original.returned)
+    expect(transfer.returned_details).to be_nil
   end
 
   it "cancels a stripe transfer" do
-    original = Stripe::Treasury::InboundTransfer.create({
+    original = Stripe::Treasury::OutboundTransfer.create({
       financial_account: financial_account.id,
       amount: 100,
       currency: 'usd',
-      origin_payment_method: payment_method.id,
+      destination_payment_method: payment_method.id,
       description: "a cool transfer"
     })
-    res, api_key = Stripe::StripeClient.active_client.execute_request(:post, "/v1/treasury/inbound_transfers/#{original.id}/cancel", api_key: 'api_key')
+    res, api_key = Stripe::StripeClient.active_client.execute_request(:post, "/v1/treasury/outbound_transfers/#{original.id}/cancel", api_key: 'api_key')
 
     expect(res.data[:status]).to eq("canceled")
   end
 
   it "cannot retrieve a transfer that doesn't exist" do
-    expect { Stripe::Treasury::InboundTransfer.retrieve('nope') }.to raise_error {|e|
+    expect { Stripe::Treasury::OutboundTransfer.retrieve('nope') }.to raise_error {|e|
       expect(e).to be_a Stripe::InvalidRequestError
       expect(e.param).to eq('transfer')
       expect(e.http_status).to eq(404)
@@ -121,7 +121,7 @@ shared_examples 'Treasury Inbound Transfer API' do
 
   it "when amount is not integer", live: true do
     expect do 
-      Stripe::Treasury::InboundTransfer.create({
+      Stripe::Treasury::OutboundTransfer.create({
         financial_account: financial_account.id,
         amount: '400.2',
         currency: 'usd',
@@ -137,7 +137,7 @@ shared_examples 'Treasury Inbound Transfer API' do
 
   it "when amount is negative", live: true do
     expect do 
-      Stripe::Treasury::InboundTransfer.create({
+      Stripe::Treasury::OutboundTransfer.create({
         financial_account: financial_account.id,
         amount: '-400',
         currency: 'usd',
