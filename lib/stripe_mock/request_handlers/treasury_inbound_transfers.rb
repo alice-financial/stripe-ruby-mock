@@ -17,7 +17,7 @@ module StripeMock
         end
 
         if financial_account = params[:financial_account]
-          assert_existence :financial_account, financial_account, accounts[financial_account]
+          assert_existence :financial_account, financial_account, treasury_financial_accounts[financial_account]
         end
 
         _transfers = treasury_inbound_transfers.each_with_object([]) do |(_, transfer), array|

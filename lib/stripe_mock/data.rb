@@ -970,7 +970,7 @@ module StripeMock
 
     def self.mock_treasury_inbound_transfer(params={})
       currency = params[:currency] || StripeMock.default_currency
-      id = params[:id] || 'ibt_test_transfer'
+      id = params[:id] || 'obt_test_transfer'
       {
         :id => id,
         :amount => 100,
@@ -982,7 +982,6 @@ module StripeMock
         :description => "InboundTransfer from my bank account",
         :financial_account => "fa_164wxjKbnvuxQXGu",
         :origin_payment_method => "pm_164xRvKbnvuxQXGuVFV2pZo1",
-        :status => "processing",
         :cancelable => true,
         :returned => false,
         :statement_descriptor => "transfer",
@@ -992,6 +991,58 @@ module StripeMock
           :succeeded_at => nil
         },
         :failure_details => nil,
+        :origin_payment_method_details => {
+          :billing_details => {
+            :address => {
+              :city => "San Francisco",
+              :country => "US",
+              :line1 => "1234 Fake Street",
+              :line2 => nil,
+              :postal_code => "94102",
+              :state => "CA"
+            },
+            :email => nil,
+            :name => "Jane Austen"
+          },
+          :type => "us_bank_account",
+          :us_bank_account => {
+            :account_holder_type => "company",
+            :account_type => "checking",
+            :bank_name => "STRIPE TEST BANK",
+            :fingerprint => "AP24Iso0btGp4N10",
+            :last4 => "6789",
+            :network => "ach",
+            :routing_number => "110000000"
+          }
+        },
+        :transaction =>  "trxn_1MtaDM2eZvKYlo2CKxgPNzLa"
+      }.merge(params)
+    end
+
+    def self.mock_treasury_outbound_transfer(params={})
+      currency = params[:currency] || StripeMock.default_currency
+      id = params[:id] || 'ibt_test_transfer'
+      {
+        :id => id,
+        :amount => 100,
+        :livemode => false,
+        :metadata => {},
+        :currency => currency,
+        :object => "treasury.outbound_transfer",
+        :created => 1304114826,
+        :description => "OutboundTransfer from my bank account",
+        :financial_account => "fa_164wxjKbnvuxQXGu",
+        :destination_payment_method => "pm_164xRvKbnvuxQXGuVFV2pZo1",
+        :cancelable => false,
+        :statement_descriptor => "transfer",
+        :status =>  "posted",
+        :status_transitions => {
+          :failed_at => nil,
+          :posted_at => 1706024778,
+          canceled_at: nil,
+          returned_at: nil
+        },
+        :returned_details => nil,
         :origin_payment_method_details => {
           :billing_details => {
             :address => {
