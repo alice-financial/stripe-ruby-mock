@@ -370,6 +370,27 @@ module StripeMock
       }.merge(params)
     end
 
+    def self.mock_account_link(params = {})
+      now = Time.now.to_i
+      {
+        object: 'account_link',
+        created: now,
+        expires_at: now + 300,
+        url: 'https://connect.stripe.com/setup/c/iB0ph1cPnRLY',
+        data: {}
+      }.merge(params)
+    end
+
+    def self.mock_express_login_link(params = {})
+      now = Time.now.to_i
+      {
+        object: 'login_link',
+        created: now,
+        url: 'https://connect.stripe.com/express/Ln7FfnNpUcCU',
+        data: {}
+      }.merge(params)
+    end
+
     def self.mock_tax_rate(params)
       {
         id: 'test_cus_default',
@@ -388,7 +409,7 @@ module StripeMock
 
     def self.mock_customer(sources, params)
       cus_id = params[:id] || "test_cus_default"
-      currency = params[:currency] || StripeMock.default_currency
+      currency = params[:currency]
       sources.each {|source| source[:customer] = cus_id}
       {
         email: 'stripe_mock@example.com',
@@ -411,12 +432,14 @@ module StripeMock
         sources: {
           object: "list",
           total_count: sources.size,
+          has_more: false,
           url: "/v1/customers/#{cus_id}/sources",
           data: sources
         },
         subscriptions: {
           object: "list",
           total_count: 0,
+          has_more: false,
           url: "/v1/customers/#{cus_id}/subscriptions",
           data: []
         },
@@ -435,11 +458,34 @@ module StripeMock
         paid: true,
         amount: 0,
         application_fee: nil,
+        application_fee_amount: nil,
         currency: currency,
         destination: nil,
         fraud_details: {},
+        payment_method_details: {
+          card: {
+            brand: "visa",
+            checks: {
+              address_line1_check: nil,
+              address_postal_code_check: nil,
+              cvc_check: "pass"
+            },
+            country: "US",
+            exp_month: 12,
+            exp_year: 2013,
+            fingerprint: "3TQGpK9JoY1GgXPw",
+            funding: "credit",
+            installments: nil,
+            last4: "4242",
+            network: "visa",
+            three_d_secure: nil,
+            wallet: nil
+          },
+          type: "card"
+        },
         receipt_email: nil,
         receipt_number: nil,
+        receipt_url: nil,
         refunded: false,
         shipping: {},
         statement_descriptor: "Charge #{charge_id}",
@@ -500,7 +546,8 @@ module StripeMock
         charge: "ch_4fWhYjzQ23UFWT",
         receipt_number: nil,
         status: "succeeded",
-        reason: "requested_by_customer"
+        reason: "requested_by_customer",
+        receipt_url: nil
       }.merge(params)
     end
 
@@ -608,8 +655,9 @@ module StripeMock
         },
         cancel_at_period_end: false,
         canceled_at: nil,
+        collection_method: 'charge_automatically',
         ended_at: nil,
-        start: 1308595038,
+        start_date: 1308595038,
         object: 'subscription',
         trial_start: 1308595038,
         trial_end: 1308681468,
@@ -619,8 +667,10 @@ module StripeMock
         discount: nil,
         metadata: {},
         default_tax_rates: nil,
+        default_payment_method: nil,
         pending_invoice_item_interval: nil,
-        next_pending_invoice_item_invoice: nil
+        next_pending_invoice_item_invoice: nil,
+        latest_invoice: nil
       }, params)
     end
 
@@ -640,6 +690,7 @@ module StripeMock
         lines: {
           object: "list",
           total_count: lines.count,
+          has_more: false,
           url: "/v1/invoices/#{in_id}/lines",
           data: lines
         },
@@ -831,6 +882,34 @@ module StripeMock
       }.merge(params)
     end
 
+    def self.mock_price(params={})
+      currency = params[:currency] || StripeMock.default_currency
+      {
+        id: "mock_price_123",
+        object: "price",
+        active: true,
+        billing_scheme: "per_unit",
+        created: 1593044959,
+        currency: currency,
+        livemode: false,
+        lookup_key: nil,
+        metadata: {},
+        nickname: 'My Mock Price',
+        product: "mock_prod_NONEXIST",  # override this with your own existing product id
+        recurring: {
+          aggregate_usage: nil,
+          interval: "month",
+          interval_count: 1,
+          usage_type: "licensed"
+        },
+        tiers_mode: nil,
+        transform_quantity: nil,
+        type: "recurring",
+        unit_amount: 2000,
+        unit_amount_decimal: "2000"
+      }.merge(params)
+    end
+
     def self.mock_product(params={})
       {
         id: "mock_prod_abc123",
@@ -852,6 +931,44 @@ module StripeMock
         unit_label: "my_unit",
         updated: 1537939442,
         url: nil
+      }.merge(params)
+    end
+
+    def self.mock_promotion_code(params={})
+      {
+        id: "mock_promo_abc123",
+        object: "promotion_code",
+        active: true,
+        code: "TESTCODE",
+        coupon: {
+          id: "mock_coupon_abc123",
+          object: "coupon",
+          amount_off: nil,
+          created: 1665773498,
+          currency: "usd",
+          duration: "repeating",
+          duration_in_months: 1,
+          livemode: false,
+          max_redemptions: nil,
+          metadata: {},
+          name: "Mock Coupon",
+          percent_off: 10.0,
+          redeem_by: nil,
+          times_redeemed: 0,
+          valid: true
+        },
+        created: 1665773499,
+        customer: nil,
+        expires_at: nil,
+        livemode: false,
+        max_redemptions: nil,
+        metadata: {},
+        restrictions: {
+          first_time_transaction: false,
+          minimum_amount: nil,
+          minimum_amount_currency: nil
+        },
+        times_redeemed: 0
       }.merge(params)
     end
 
@@ -878,6 +995,7 @@ module StripeMock
           object: "list",
           url: "/v1/recipients/#{rp_id}/cards",
           data: cards,
+          has_more: false,
           total_count: cards.count
         },
         default_card: nil
@@ -1388,6 +1506,16 @@ module StripeMock
               bitcoin_receiver: 1545182
             }
           }],
+        instant_available: [
+          {
+            currency: "usd",
+            amount: usd_balance,
+            source_types: {
+              card: 25907032203,
+              bank_account: 108476658,
+              bitcoin_receiver: 1545182
+            }
+          }],
         connect_reserved: [
           {
             currency: "usd",
@@ -1471,13 +1599,12 @@ module StripeMock
     end
 
     def self.mock_subscription_item(params = {})
-      iid = params[:id] || 'test_txn_default'
+      id = params[:id] || 'test_si_default'
       {
-        id: iid,
+        id: id,
         object: 'subscription_item',
         created: 1504716183,
-        metadata: {
-      },
+        metadata: {},
         plan: {
           id: 'PER_USER_PLAN1',
           object: 'plan',
@@ -1567,10 +1694,12 @@ module StripeMock
 
     def self.mock_payment_method(params = {})
       payment_method_id = params[:id] || 'pm_1ExEuFL2DI6wht39WNJgbybl'
+
       type = params[:type].to_sym
+      last4 = params.dig(:card, :number)
       data = {
         card: {
-          brand: case params.dig(:card, :number)&.to_s
+          brand: case last4&.to_s
           when /^4/, nil
             'visa'
           when /^5[1-5]/
@@ -1589,7 +1718,7 @@ module StripeMock
           fingerprint: 'Hr3Ly5z5IYxsokWA',
           funding: 'credit',
           generated_from: nil,
-          last4: params.dig(:card, :number)&.[](-4..) || '3155',
+          last4: last4.nil? ? '3155' : last4.to_s[-4..],
           three_d_secure_usage: { supported: true },
           wallet: nil
         },
