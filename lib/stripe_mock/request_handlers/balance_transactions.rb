@@ -23,8 +23,9 @@ module StripeMock
       end
 
       def create_balance_transaction(route, method_url, params, headers)
+        stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         route =~ method_url
-        cus = assert_existence :customer, $1, customers[$1]
+        cus = assert_existence :customer, $1, customers[stripe_account][$1]
         id = new_customer_balance_transaction($1, params)
         balance_transactions[id]
       end

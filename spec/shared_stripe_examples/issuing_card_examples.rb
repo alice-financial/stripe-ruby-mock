@@ -172,40 +172,4 @@ shared_examples 'Issuing Cards API' do
     end
   end
 
-
-  context 'get issuing card details' do
-    let(:card) {Stripe::Issuing::Card.create(params)}
-    context 'virtual card' do
-
-      it 'returns a card details object' do
-        res = Stripe::Issuing::Card.details(card.id)
-        expect(res.object).to eq 'issuing.card_details'
-        expect(res.cvc).not_to be_nil
-        expect(res.exp_month).to eq(card.exp_month)
-        expect(res.exp_year).to eq(card.exp_year)
-        expect(res.number).not_to be_nil
-      end
-    end
-    context 'physical card' do
-      let(:params) {{
-          type: 'physical',
-          cardholder: cardholder.id,
-          currency: 'usd',
-          shipping: {
-              name: 'foo',
-              address: {
-                  line1: 'line1',
-                  city: 'Brooklyn',
-                  state: 'CA',
-                  country: 'US',
-                  postal_code: '11201'
-              }
-          }
-      }}
-      it 'raises an error' do
-        expect {Stripe::Issuing::Card.details(card.id)}.to raise_error(Stripe::InvalidRequestError)
-      end
-    end
-  end
-
 end

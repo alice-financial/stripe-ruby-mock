@@ -6,7 +6,8 @@ module StripeMock
         klass.add_handler 'post /v1/invoices',               :new_invoice
         klass.add_handler 'get /v1/invoices/upcoming',       :upcoming_invoice
         klass.add_handler 'get /v1/invoices/(.*)/lines',     :get_invoice_line_items
-        klass.add_handler 'get /v1/invoices/(.*)',           :get_invoice
+        klass.add_handler 'get /v1/invoices/((?!search).*)', :get_invoice
+        klass.add_handler 'get /v1/invoices/search',         :search_invoices
         klass.add_handler 'get /v1/invoices',                :list_invoices
         klass.add_handler 'post /v1/invoices/(.*)/pay',      :pay_invoice
         klass.add_handler 'post /v1/invoices/(.*)',          :update_invoice
@@ -23,6 +24,14 @@ module StripeMock
         params.delete(:lines) if params[:lines]
         assert_existence :invoice, $1, invoices[$1]
         invoices[$1].merge!(params)
+      end
+
+      SEARCH_FIELDS = ["currency", "customer", "number", "receipt_number", "subscription", "total"].freeze
+      def search_invoices(route, method_url, params, headers)
+        require_param(:query) unless params[:query]
+
+        results = search_results(invoices.values, params[:query], fields: SEARCH_FIELDS, resource_name: "invoices")
+        Data.mock_list_object(results, params)
       end
 
       def list_invoices(route, method_url, params, headers)
@@ -53,16 +62,22 @@ module StripeMock
         route =~ method_url
         assert_existence :invoice, $1, invoices[$1]
         charge = invoice_charge(invoices[$1])
-        invoices[$1].merge!(:paid => true, :attempted => true, :charge => charge[:id])
+        invoices[$1].merge!(
+          :paid => true,
+          :status => "paid",
+          :attempted => true,
+          :charge => charge[:id],
+        )
       end
 
-      def upcoming_invoice(route, method_url, params, headers)
+      def upcoming_invoice(route, method_url, params, headers = {})
+        stripe_account = headers && headers[:stripe_account] || Stripe.api_key
         route =~ method_url
-        raise Stripe::InvalidRequestError.new('Missing required param: customer', nil, http_status: 400) if params[:customer].nil?
+        raise Stripe::InvalidRequestError.new('Missing required param: customer if subscription is not provided', nil, http_status: 400) if params[:customer].nil? && params[:subscription].nil?
         raise Stripe::InvalidRequestError.new('When previewing changes to a subscription, you must specify either `subscription` or `subscription_items`', nil, http_status: 400) if !params[:subscription_proration_date].nil? && params[:subscription].nil? && params[:subscription_plan].nil?
         raise Stripe::InvalidRequestError.new('Cannot specify proration date without specifying a subscription', nil, http_status: 400) if !params[:subscription_proration_date].nil? && params[:subscription].nil?
 
-        customer = customers[params[:customer]]
+        customer = customers[stripe_account][params[:customer]]
         assert_existence :customer, params[:customer], customer
 
         raise Stripe::InvalidRequestError.new("No upcoming invoices for customer: #{customer[:id]}", nil, http_status: 404) if customer[:subscriptions][:data].length == 0
