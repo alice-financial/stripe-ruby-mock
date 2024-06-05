@@ -32,7 +32,7 @@ shared_examples 'Issuing Cards API' do
 
 
   context 'update card' do
-    it 'updates the cardholder' do
+    it 'updates the card' do
       card = Stripe::Issuing::Card.create(params)
       result = Stripe::Issuing::Card.update(card.id, { status: 'active' })
       expect(result.status).to eq('active')
@@ -40,12 +40,37 @@ shared_examples 'Issuing Cards API' do
   end
 
   context 'create card' do
-    it 'creates a cardholder' do
-      cardholder = Stripe::Issuing::Card.create(params)
-      expect(cardholder.object).to eq('issuing.card')
-      expect(cardholder).to be_a Stripe::Issuing::Card
-      expect(cardholder.id).to match(/ic_/)
+    it 'creates a card' do
+      card = Stripe::Issuing::Card.create(params)
+      expect(card.object).to eq('issuing.card')
+      expect(card).to be_a Stripe::Issuing::Card
+      expect(card.id).to match(/ic_/)
     end
+
+    it "can return dummy shipping data for a physical card" do
+      params = {
+        type: 'physical',
+        cardholder: cardholder.id,
+        currency: 'usd',
+        shipping: {
+            name: 'foo',
+            address: {
+                line1: 'line1',
+                city: 'Brooklyn',
+                state: 'CA',
+                country: 'US',
+                postal_code: '11201'
+            }
+        }
+      }
+      card = Stripe::Issuing::Card.create(params)
+      expect(card.object).to eq('issuing.card')
+      expect(card).to be_a Stripe::Issuing::Card
+      expect(card.id).to match(/ic_/)
+      expect(card.type).to eql("physical")
+      expect(card.shipping.carrier).to eql("usps")
+    end
+
     describe 'Errors' do
       context 'missing type' do
         it 'throws error' do

@@ -5,18 +5,27 @@ module StripeMock
       id = params[:id] || 'ic_1GAs1xC38dnJBVBrG6oX7Key'
 
       name = params[:name] || cardholder[:name]
+      shipping = if params[:type] == "physical"
+                   {
+                     carrier: "usps",
+                     customs: {eori_number: nil},
+                     eta: Time.now.to_i + (14 * 3600 * 24), # add two weeks
+                     name: "Test user",
+                     phone: nil,
+                     phone_number: nil,
+                     require_signature: false,
+                     service: "standard",
+                     status: "pending", # one of shipped, pending, returned
+                     tracking_number: nil,
+                     tracking_url: nil,
+                     type: "individual"
+                   }
+                 else
+                   nil
+                 end
       StripeMock::Util.rmerge({
           id: id,
           object: 'issuing.card',
-          authorization_controls:{
-              allowed_categories: [],
-              blocked_categories: [],
-              spending_limits: [],
-              spending_limits_currency: nil,
-              currency: nil,
-              max_amount: nil,
-              max_approvals: nil
-          },
           brand: 'Visa',
           cardholder: cardholder.dup,
           created: 1581401733,
@@ -30,7 +39,7 @@ module StripeMock
           pin: nil,
           replacement_for: nil,
           replacement_reason: nil,
-          shipping: nil,
+          shipping: shipping,
           status: 'inactive',
 
                               }, params)
