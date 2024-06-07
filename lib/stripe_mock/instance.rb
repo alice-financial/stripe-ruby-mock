@@ -27,7 +27,7 @@ module StripeMock
     include StripeMock::RequestHandlers::AccountLinks
     include StripeMock::RequestHandlers::ExpressLoginLinks
     include StripeMock::RequestHandlers::Accounts
-    include StripeMock::RequestHandlers::AccountSessions
+    include StripeMock::RequestHandlers::AccountSession
     include StripeMock::RequestHandlers::TreasuryFinancialAccounts
     include StripeMock::RequestHandlers::Balance
     include StripeMock::RequestHandlers::BalanceTransactions

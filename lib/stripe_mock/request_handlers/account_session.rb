@@ -1,7 +1,8 @@
 module StripeMock
   module RequestHandlers
-    module AccountSessions
-      def AccountSessions.included(klass)
+    # https://docs.stripe.com/api/account_sessions
+    module AccountSession
+      def AccountSession.included(klass)
         klass.add_handler "post /v1/account_sessions", :create_account_session
       end
 
