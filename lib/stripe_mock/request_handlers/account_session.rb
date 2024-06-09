@@ -3,7 +3,7 @@ module StripeMock
     # https://docs.stripe.com/api/account_sessions
     module AccountSession
       def AccountSession.included(klass)
-        klass.add_handler "post /v1/account_sessions", :create_account_session
+        klass.add_handler 'post /v1/account_sessions', :create_account_session
       end
 
       def create_account_session(route, method_url, params, headers)

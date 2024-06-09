@@ -1,5 +1,6 @@
 module StripeMock
   class Instance
+
     include StripeMock::RequestHandlers::Helpers
     include StripeMock::RequestHandlers::ParamValidators
 
@@ -11,12 +12,12 @@ module StripeMock
     def self.add_handler(route, name)
       @@handlers << {
         :route => %r{^#{route}$},
-        :name => name,
+        :name => name
       }
     end
 
     def self.handler_for_method_url(method_url)
-      @@handlers.find { |h| method_url =~ h[:route] }
+      @@handlers.find {|h| method_url =~ h[:route] }
     end
 
     include StripeMock::RequestHandlers::PaymentIntents
@@ -76,7 +77,7 @@ module StripeMock
       @accounts = {}
       @treasury_financial_accounts = {}
       @balance = Data.mock_balance
-      @balance_transactions = Data.mock_balance_transactions(["txn_05RsQX2eZvKYlo2C0FRTGSSA", "txn_15RsQX2eZvKYlo2C0ERTYUIA", "txn_25RsQX2eZvKYlo2C0ZXCVBNM", "txn_35RsQX2eZvKYlo2C0QAZXSWE", "txn_45RsQX2eZvKYlo2C0EDCVFRT", "txn_55RsQX2eZvKYlo2C0OIKLJUY", "txn_65RsQX2eZvKYlo2C0ASDFGHJ", "txn_75RsQX2eZvKYlo2C0EDCXSWQ", "txn_85RsQX2eZvKYlo2C0UJMCDET", "txn_95RsQX2eZvKYlo2C0EDFRYUI"])
+      @balance_transactions = Data.mock_balance_transactions(['txn_05RsQX2eZvKYlo2C0FRTGSSA','txn_15RsQX2eZvKYlo2C0ERTYUIA', 'txn_25RsQX2eZvKYlo2C0ZXCVBNM', 'txn_35RsQX2eZvKYlo2C0QAZXSWE', 'txn_45RsQX2eZvKYlo2C0EDCVFRT', 'txn_55RsQX2eZvKYlo2C0OIKLJUY', 'txn_65RsQX2eZvKYlo2C0ASDFGHJ', 'txn_75RsQX2eZvKYlo2C0EDCXSWQ', 'txn_85RsQX2eZvKYlo2C0UJMCDET', 'txn_95RsQX2eZvKYlo2C0EDFRYUI'])
       @bank_tokens = {}
       @card_tokens = {}
       @customers = { Stripe.api_key => {} }
@@ -86,7 +87,7 @@ module StripeMock
       @payment_methods = {}
       @setup_intents = {}
       @coupons = {}
-      @disputes = Data.mock_disputes(["dp_05RsQX2eZvKYlo2C0FRTGSSA", "dp_15RsQX2eZvKYlo2C0ERTYUIA", "dp_25RsQX2eZvKYlo2C0ZXCVBNM", "dp_35RsQX2eZvKYlo2C0QAZXSWE", "dp_45RsQX2eZvKYlo2C0EDCVFRT", "dp_55RsQX2eZvKYlo2C0OIKLJUY", "dp_65RsQX2eZvKYlo2C0ASDFGHJ", "dp_75RsQX2eZvKYlo2C0EDCXSWQ", "dp_85RsQX2eZvKYlo2C0UJMCDET", "dp_95RsQX2eZvKYlo2C0EDFRYUI"])
+      @disputes = Data.mock_disputes(['dp_05RsQX2eZvKYlo2C0FRTGSSA','dp_15RsQX2eZvKYlo2C0ERTYUIA', 'dp_25RsQX2eZvKYlo2C0ZXCVBNM', 'dp_35RsQX2eZvKYlo2C0QAZXSWE', 'dp_45RsQX2eZvKYlo2C0EDCVFRT', 'dp_55RsQX2eZvKYlo2C0OIKLJUY', 'dp_65RsQX2eZvKYlo2C0ASDFGHJ', 'dp_75RsQX2eZvKYlo2C0EDCXSWQ', 'dp_85RsQX2eZvKYlo2C0UJMCDET', 'dp_95RsQX2eZvKYlo2C0EDFRYUI'])
       @events = {}
       @invoices = {}
       @invoice_items = {}
@@ -157,8 +158,8 @@ module StripeMock
     end
 
     def generate_webhook_event(event_data)
-      event_data[:id] ||= new_id "evt"
-      @events[event_data[:id]] = symbolize_names(event_data)
+      event_data[:id] ||= new_id 'evt'
+      @events[ event_data[:id] ] = symbolize_names(event_data)
     end
 
     def upsert_stripe_object(object, attributes)
@@ -170,24 +171,24 @@ module StripeMock
       if id.nil? || id == ""
         # Insert new Stripe object
         case object
-        when :balance_transaction
-          id = new_balance_transaction("txn", attributes)
-        when :dispute
-          id = new_dispute("dp", attributes)
-        else
-          raise UnsupportedRequestError.new "Unsupported stripe object `#{object}`"
+          when :balance_transaction
+            id = new_balance_transaction('txn', attributes)
+          when :dispute
+            id = new_dispute('dp', attributes)
+          else
+            raise UnsupportedRequestError.new "Unsupported stripe object `#{object}`"
         end
       else
         # Update existing Stripe object
         case object
-        when :balance_transaction
-          btxn = assert_existence :balance_transaction, id, @balance_transactions[id]
-          btxn.merge!(attributes)
-        when :dispute
-          dispute = assert_existence :dispute, id, @disputes[id]
-          dispute.merge!(attributes)
-        else
-          raise UnsupportedRequestError.new "Unsupported stripe object `#{object}`"
+          when :balance_transaction
+            btxn = assert_existence :balance_transaction, id, @balance_transactions[id]
+            btxn.merge!(attributes)
+          when :dispute
+            dispute = assert_existence :dispute, id, @disputes[id]
+            dispute.merge!(attributes)
+          else
+            raise UnsupportedRequestError.new "Unsupported stripe object `#{object}`"
         end
       end
       id
@@ -195,7 +196,7 @@ module StripeMock
 
     private
 
-    def assert_existence(type, id, obj, message = nil)
+    def assert_existence(type, id, obj, message=nil)
       if obj.nil?
         msg = message || "No such #{type}: #{id}"
         raise Stripe::InvalidRequestError.new(msg, type.to_s, http_status: 404)
@@ -246,15 +247,15 @@ module StripeMock
           application: nil,
           currency: params[:currency] || StripeMock.default_currency,
           description: "Stripe processing fees",
-          type: "stripe_fee",
-        },
+          type: "stripe_fee"
+        }
       ]
       if application_fee
         params[:fee_details] << {
           amount: application_fee,
           currency: params[:currency] || StripeMock.default_currency,
           description: "Application fee",
-          type: "application_fee",
+          type: "application_fee"
         }
       end
     end
