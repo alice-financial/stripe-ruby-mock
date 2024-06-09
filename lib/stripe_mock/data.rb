@@ -1849,9 +1849,9 @@ module StripeMock
         object: 'account_session',
         account: params[:account],
         client_secret: '_OXIKXxEihJokDBnDoe2sgG5OGSO2Q12shKvbeboxpALZGng',
-        expires_at: (Time.now + 1.hour).to_i,
+        expires_at: (Time.now + 3600).to_i,
         livemode: false,
-        params: params.deep_transform_keys { |key| key.to_s },
+        components: params[:components],
       }
     end
   end
