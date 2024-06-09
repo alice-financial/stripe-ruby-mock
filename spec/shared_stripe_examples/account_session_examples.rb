@@ -1,19 +1,17 @@
 require 'spec_helper'
 
 shared_examples 'AccountSession API' do
-    it 'retrieves a stripe balance' do
+  it 'creates a stripe Account Session' do
+    account = "acct_my_cool_account"
+    # https://docs.stripe.com/api/account_sessions/create
     params = {
-      account: 'my cool account',
+      account:,
       components: {
         payments: {
           enabled: true,
-          features: {
-            refund_management: true,
-            dispute_management: true,
-            capture_payments: true,
-          },
-        },
-      },
+          features: { refund_management: true, dispute_management: true, capture_payments: true }
+        }
+      }
     }
     account_session = Stripe::AccountSession.create(params)
     expect(account_session).to be_a Stripe::AccountSession
