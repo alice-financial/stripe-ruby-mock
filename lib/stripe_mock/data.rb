@@ -1843,5 +1843,20 @@ module StripeMock
         success_url: 'https://example.com/success'
       }.merge(params)
     end
+
+    # https://docs.stripe.com/api/account_sessions/create
+    def self.mock_account_session(params = {})
+      # the 'components' hash is much more elaborate in a real response, but reflecting the params hash
+      # is adequate for a high-level mock response
+      components = params[:components]
+      {
+        object: 'account_session',
+        account: params[:account],
+        client_secret: '_OXIKXxEihJokDBnDoe2sgG5OGSO2Q12shKvbeboxpALZGng',
+        expires_at: (Time.now + 3600).to_i,
+        livemode: false,
+        components:,
+      }
+    end
   end
 end

@@ -8,6 +8,7 @@ def it_behaves_like_stripe(&block)
   it_behaves_like 'Treasury Inbound Transfer API', &block
   it_behaves_like 'Treasury Outbound Transfer API', &block
   it_behaves_like 'Account API', &block
+  it_behaves_like 'AccountSession API', &block
   it_behaves_like 'Account Link API', &block
   it_behaves_like 'Balance API', &block
   it_behaves_like 'Balance Transaction API', &block
