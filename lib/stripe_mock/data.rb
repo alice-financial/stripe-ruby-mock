@@ -51,9 +51,9 @@ module StripeMock
                   eligible: false,
                   ineligible_reason: "missing_cardholder_contact"
               },
-              primary_account_identifier: null
-            }
-        }, params)
+              primary_account_identifier: nil
+          }
+      }, params)
     end
 
     def self.mock_cardholder(params = {})
