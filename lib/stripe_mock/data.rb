@@ -1,6 +1,7 @@
 module StripeMock
   module Data
 
+    # https://docs.stripe.com/api/issuing/cards/object
     def self.mock_issuing_card(cardholder, params = {})
       id = params[:id] || 'ic_1GAs1xC38dnJBVBrG6oX7Key'
 
@@ -15,7 +16,7 @@ module StripeMock
                      phone_number: nil,
                      require_signature: false,
                      service: "standard",
-                     status: "pending", # one of shipped, pending, returned
+                     status: "pending", # one of submitted, shipped, pending, returned, failure, delivered, canceled
                      tracking_number: nil,
                      tracking_url: nil,
                      type: "individual"
@@ -41,8 +42,18 @@ module StripeMock
           replacement_reason: nil,
           shipping: shipping,
           status: 'inactive',
-
-                              }, params)
+          wallets: {
+              apple_pay: {
+                  eligible: false,
+                  ineligible_reason: "missing_cardholder_contact"
+              },
+              google_pay: {
+                  eligible: false,
+                  ineligible_reason: "missing_cardholder_contact"
+              },
+              primary_account_identifier: null
+            }
+        }, params)
     end
 
     def self.mock_cardholder(params = {})
