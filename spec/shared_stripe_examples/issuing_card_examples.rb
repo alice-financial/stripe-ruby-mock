@@ -45,6 +45,18 @@ shared_examples 'Issuing Cards API' do
       expect(card.object).to eq('issuing.card')
       expect(card).to be_a Stripe::Issuing::Card
       expect(card.id).to match(/ic_/)
+      expect(card.wallets.to_hash).to eq({
+          apple_pay: {
+              eligible: false,
+              ineligible_reason: "missing_cardholder_contact"
+          },
+          google_pay: {
+              eligible: false,
+              ineligible_reason: "missing_cardholder_contact"
+          },
+          primary_account_identifier: nil
+      })
+
     end
 
     it "can return dummy shipping data for a physical card" do
