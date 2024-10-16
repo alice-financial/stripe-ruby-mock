@@ -45,6 +45,7 @@ module StripeMock
     include StripeMock::RequestHandlers::InvoiceItems
     include StripeMock::RequestHandlers::IssuingCardholders
     include StripeMock::RequestHandlers::IssuingCards
+    include StripeMock::RequestHandlers::IssuingTokens
     include StripeMock::RequestHandlers::Orders
     include StripeMock::RequestHandlers::Plans
     include StripeMock::RequestHandlers::Prices
@@ -69,7 +70,7 @@ module StripeMock
                 :setup_intents, :plans, :prices, :promotion_codes, :recipients, :refunds, :transfers, :payouts,
                 :subscriptions, :country_spec, :subscriptions_items, :products, :tax_rates, :checkout_sessions,
                 :checkout_session_line_items, :persons, :topups, :cardholders, :issuing_cards,
-                :treasury_financial_accounts, :treasury_inbound_transfers, :treasury_outbound_transfers
+                :treasury_financial_accounts, :treasury_inbound_transfers, :treasury_outbound_transfers, :issuing_tokens
 
     attr_accessor :error_queue, :debug, :conversion_rate, :account_balance
 
@@ -92,6 +93,7 @@ module StripeMock
       @invoices = {}
       @invoice_items = {}
       @issuing_cards = {}
+      @issuing_tokens = Data.mock_issuing_tokens
       @orders = {}
       @payment_methods = {}
       @plans = {}
