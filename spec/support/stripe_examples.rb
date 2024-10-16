@@ -27,6 +27,7 @@ def it_behaves_like_stripe(&block)
   it_behaves_like 'Invoice Item API', &block
   it_behaves_like 'Issuing Cardholders API', &block
   it_behaves_like 'Issuing Cards API', &block
+  it_behaves_like 'Issuing Tokens API', &block
   it_behaves_like 'Plan API', &block
   it_behaves_like 'Price API', &block
   it_behaves_like 'Product API', &block

@@ -213,6 +213,36 @@ module StripeMock
       }.merge(params)
     end
 
+    def self.mock_issuing_tokens
+      [
+        {
+          "id": "intok_i_am_a_teapot",
+          "object": "issuing.token",
+          "card": "ic_i_am_a_teapot",
+          "created": 1682059060,
+          "network_updated_at": 1682059060,
+          "livemode": false,
+          "status": "active",
+          "last4": "1337",
+          "token_service_provider": "mastercard",
+          "wallet_provider": "apple_pay",
+          "device_fingerprint": "intd_i_am_a_teapot"
+        }, {
+          "id": "intok_1MzDbE2eZvKYlo2C26a98MDg",
+          "object": "issuing.token",
+          "card": "ic_1MytUz2eZvKYlo2CZCn5fuvZ",
+          "created": 1682059060,
+          "network_updated_at": 1682059060,
+          "livemode": false,
+          "status": "suspended",
+          "last4": "2424",
+          "token_service_provider": "visa",
+          "wallet_provider": "apple_pay",
+          "device_fingerprint": "intd_1MzDbE2eZvKYcp3095svdf"
+        }
+      ]
+    end
+
     def self.mock_account(params = {})
       if params[:type].to_s == "custom"
         mock_custom_account(params)
