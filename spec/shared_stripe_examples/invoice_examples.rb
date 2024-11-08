@@ -185,6 +185,11 @@ shared_examples 'Invoice API' do
       expect(@invoice.status).to eq("paid")
     end
 
+    it 'raises an error if attempting to pay twice' do
+      @invoice = @invoice.pay
+      expect { @invoice.pay }.to raise_error(Stripe::InvalidRequestError, /Invoices with pending payments waiting to clear cannot be paid, voided, or marked uncollectible./)
+    end
+
     it 'creates a new charge object' do
       expect{ @invoice.pay }.to change { Stripe::Charge.list.data.count }.by 1
     end
