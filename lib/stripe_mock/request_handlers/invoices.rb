@@ -60,7 +60,16 @@ module StripeMock
 
       def pay_invoice(route, method_url, params, headers)
         route =~ method_url
-        assert_existence :invoice, $1, invoices[$1]
+        invoice = invoices[$1]
+        assert_existence :invoice, $1, invoice
+
+
+        # This error message seems to be what Stripe uses for bank accounts, for cards (or perhaps any method where 
+        # payment is instantaneous) you just get "Invoice is already paid."
+        if invoice[:paid] == true
+          raise Stripe::InvalidRequestError.new('Invoices with pending payments waiting to clear cannot be paid, voided, or marked uncollectible.', nil, http_status: 400)
+        end
+
         charge = invoice_charge(invoices[$1])
         invoices[$1].merge!(
           :paid => true,
