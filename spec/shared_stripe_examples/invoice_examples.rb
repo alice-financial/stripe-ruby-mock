@@ -227,6 +227,28 @@ shared_examples 'Invoice API' do
     end
   end
 
+  context "voiding an invoice" do
+    before do
+      @invoice = Stripe::Invoice.create
+    end
+
+    it 'sets status' do
+      @invoice = Stripe::Invoice.void_invoice(@invoice.id)
+      expect(@invoice.status).to eq("void")
+    end
+  end
+
+  context "marking an invoice uncollectible" do
+    before do
+      @invoice = Stripe::Invoice.create
+    end
+
+    it 'sets status' do
+      @invoice = Stripe::Invoice.mark_uncollectible(@invoice.id)
+      expect(@invoice.status).to eq("uncollectible")
+    end
+  end
+
   context "retrieving upcoming invoice" do
     let(:customer)      { Stripe::Customer.create(source: stripe_helper.generate_card_token) }
     let(:coupon_amtoff) { stripe_helper.create_coupon(id: '100OFF', currency: 'usd', amount_off: 100_00, duration: 'repeating', duration_in_months: 6) }
