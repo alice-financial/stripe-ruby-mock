@@ -3,14 +3,16 @@ module StripeMock
     module Invoices
 
       def Invoices.included(klass)
-        klass.add_handler 'post /v1/invoices',               :new_invoice
-        klass.add_handler 'get /v1/invoices/upcoming',       :upcoming_invoice
-        klass.add_handler 'get /v1/invoices/(.*)/lines',     :get_invoice_line_items
-        klass.add_handler 'get /v1/invoices/((?!search).*)', :get_invoice
-        klass.add_handler 'get /v1/invoices/search',         :search_invoices
-        klass.add_handler 'get /v1/invoices',                :list_invoices
-        klass.add_handler 'post /v1/invoices/(.*)/pay',      :pay_invoice
-        klass.add_handler 'post /v1/invoices/(.*)',          :update_invoice
+        klass.add_handler 'post /v1/invoices',                         :new_invoice
+        klass.add_handler 'get /v1/invoices/upcoming',                 :upcoming_invoice
+        klass.add_handler 'get /v1/invoices/(.*)/lines',               :get_invoice_line_items
+        klass.add_handler 'get /v1/invoices/((?!search).*)',           :get_invoice
+        klass.add_handler 'get /v1/invoices/search',                   :search_invoices
+        klass.add_handler 'get /v1/invoices',                          :list_invoices
+        klass.add_handler 'post /v1/invoices/(.*)/pay',                :pay_invoice
+        klass.add_handler 'post /v1/invoices/(.*)/void',               :void_invoice
+        klass.add_handler 'post /v1/invoices/(.*)/mark_uncollectible', :mark_invoice_uncollectible
+        klass.add_handler 'post /v1/invoices/(.*)',                    :update_invoice
       end
 
       def new_invoice(route, method_url, params, headers)
@@ -24,6 +26,18 @@ module StripeMock
         params.delete(:lines) if params[:lines]
         assert_existence :invoice, $1, invoices[$1]
         invoices[$1].merge!(params)
+      end
+
+      def void_invoice(route, method_url, params, headers)
+        route =~ method_url
+        assert_existence :invoice, $1, invoices[$1]
+        invoices[$1].merge!({status: "void"})
+      end
+
+      def mark_invoice_uncollectible(route, method_url, params, headers)
+        route =~ method_url
+        assert_existence :invoice, $1, invoices[$1]
+        invoices[$1].merge!({status: "uncollectible"})
       end
 
       SEARCH_FIELDS = ["currency", "customer", "number", "receipt_number", "subscription", "total"].freeze
