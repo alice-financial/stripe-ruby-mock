@@ -106,9 +106,10 @@ shared_examples 'Treasury Outbound Transfer API' do
       destination_payment_method: payment_method.id,
       description: "a cool transfer"
     })
-    res, api_key = Stripe::StripeClient.active_client.execute_request(:post, "/v1/treasury/outbound_transfers/#{original.id}/cancel", api_key: 'api_key')
 
-    expect(res.data[:status]).to eq("canceled")
+    res = Stripe::Treasury::OutboundTransfer.cancel(original.id)
+
+    expect(res.status).to eq("canceled")
   end
 
   it "cannot retrieve a transfer that doesn't exist" do
