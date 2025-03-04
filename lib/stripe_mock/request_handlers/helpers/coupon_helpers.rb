@@ -4,6 +4,7 @@ module StripeMock
       def add_coupon_to_object(object, coupon)
         discount_attrs = {}.tap do |attrs|
           attrs[object[:object]]         = object[:id]
+          attrs[:object]                 = "discount"
           attrs[:coupon]                 = coupon
           attrs[:start]                  = Time.now.to_i
           attrs[:end]                    = (DateTime.now >> coupon[:duration_in_months].to_i).to_time.to_i if coupon[:duration] == 'repeating'

@@ -1,0 +1,15 @@
+source 'https://rubygems.org'
+
+group :test do
+  gem 'rake'
+  gem 'dotenv'
+end
+
+gem "byebug"
+
+gem "stripe", "~> 13.5"
+gem 'stackprof'
+gem 'ruby-prof'
+gem "test-prof"
+
+gemspec path: "../"

@@ -5,6 +5,7 @@ require 'rspec'
 require 'stripe'
 require 'stripe_mock'
 require 'stripe_mock/server'
+require 'stripe_mock/compat'
 require "byebug"
 require 'dotenv'
 
@@ -13,6 +14,15 @@ Dotenv.load('.env')
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir["./spec/support/**/*.rb"].each {|f| require f}
+
+
+if StripeMock::Compat.stripe_gte_13?
+  Stripe::APIRequestor::SystemProfiler.class_eval do
+    def self.uname
+      "testing"
+    end
+  end
+end
 
 RSpec.configure do |c|
   tags = c.filter_manager.inclusions.rules
