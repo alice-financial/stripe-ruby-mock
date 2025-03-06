@@ -3,11 +3,12 @@ module StripeMock
     module TreasuryFinancialAccounts
 
       def TreasuryFinancialAccounts.included(klass)
-        klass.add_handler 'post /v1/treasury/financial_accounts',      :new_treasury_financial_account
-        klass.add_handler 'get /v1/treasury/financial_account',        :get_treasury_financial_account
-        klass.add_handler 'get /v1/treasury/financial_accounts/(.*)',  :get_treasury_financial_account
-        klass.add_handler 'post /v1/treasury/financial_accounts/(.*)', :update_treasury_financial_account
-        klass.add_handler 'get /v1/treasury/financial_accounts',       :list_treasury_financial_accounts
+        klass.add_handler 'post /v1/treasury/financial_accounts',            :new_treasury_financial_account
+        klass.add_handler 'get /v1/treasury/financial_account',              :get_treasury_financial_account
+        klass.add_handler 'post /v1/treasury/financial_accounts/(.*)/close', :close_treasury_financial_account
+        klass.add_handler 'get /v1/treasury/financial_accounts/(.*)',        :get_treasury_financial_account
+        klass.add_handler 'post /v1/treasury/financial_accounts/(.*)',       :update_treasury_financial_account
+        klass.add_handler 'get /v1/treasury/financial_accounts',             :list_treasury_financial_accounts
       end
 
       def new_treasury_financial_account(route, method_url, params, headers)
@@ -35,6 +36,20 @@ module StripeMock
         route =~ method_url
         treasury_financial_account = assert_existence :treasury_financial_account, $1, treasury_financial_accounts[$1]
         treasury_financial_account.merge!(params)
+        treasury_financial_account
+      end
+
+      def close_treasury_financial_account(route, method_url, _params, headers)
+        route =~ method_url
+        treasury_financial_account = assert_existence :treasury_financial_account, $1, treasury_financial_accounts[$1]
+        closed_params = {
+          "status"=>"closed",
+          "status_details"=>{"closed"=>{"reasons"=>["closed_by_platform"]}},
+          "active_features"=>[],
+          "pending_features"=>[],
+          "restricted_features"=>["financial_addresses.aba"]
+        }
+        treasury_financial_account.merge!(closed_params)
         treasury_financial_account
       end
 
