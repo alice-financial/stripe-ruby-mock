@@ -58,4 +58,13 @@ shared_examples 'Treasury Financial Account API' do
       expect(account.status).to eq 'closed'
     end
   end
+
+  describe 'close account' do
+    it 'closes account' do
+      new_account = Stripe::Treasury::FinancialAccount.create
+      account = Stripe::Treasury::FinancialAccount.close(new_account.id)
+
+      expect(account.status).to eq 'closed'
+    end
+  end
 end
