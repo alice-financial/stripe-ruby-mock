@@ -64,13 +64,15 @@ module StripeMock
     include StripeMock::RequestHandlers::TaxRates
     include StripeMock::RequestHandlers::Checkout
     include StripeMock::RequestHandlers::Checkout::Session
+    include StripeMock::RequestHandlers::Mandates
 
     attr_reader :accounts, :balance, :balance_transactions, :bank_tokens, :charges, :coupons, :customers,
                 :disputes, :events, :invoices, :invoice_items, :orders, :payment_intents, :payment_methods,
                 :setup_intents, :plans, :prices, :promotion_codes, :recipients, :refunds, :transfers, :payouts,
                 :subscriptions, :country_spec, :subscriptions_items, :products, :tax_rates, :checkout_sessions,
                 :checkout_session_line_items, :persons, :topups, :cardholders, :issuing_cards,
-                :treasury_financial_accounts, :treasury_inbound_transfers, :treasury_outbound_transfers, :issuing_tokens
+                :treasury_financial_accounts, :treasury_inbound_transfers, :treasury_outbound_transfers, :issuing_tokens,
+                :mandates
 
     attr_accessor :error_queue, :debug, :conversion_rate, :account_balance
 
@@ -114,6 +116,7 @@ module StripeMock
       @checkout_sessions = {}
       @topups = {}
       @checkout_session_line_items = {}
+      @mandates = {}
 
       @debug = false
       @error_queue = ErrorQueue.new
