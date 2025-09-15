@@ -1899,5 +1899,19 @@ module StripeMock
         components:,
       }
     end
+
+    def self.mock_mandate(params = {})
+      id = params[:id] || 'mandate_test'
+      {
+        id:,
+        customer_acceptance: {"accepted_at":1757695073,"online":{"ip_address":"127.0.0.1","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:142.0) Gecko/20100101 Firefox/142.0"},"type":"online"},
+        livemode: false,
+        multi_use: {},
+        payment_method: "ba_test",
+        payment_method_details: {"type":"us_bank_account","us_bank_account":{}},
+        status: "active",
+        type: "multi_use"
+      }.merge(params)
+    end
   end
 end

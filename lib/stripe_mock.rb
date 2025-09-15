@@ -92,6 +92,7 @@ require 'stripe_mock/request_handlers/ephemeral_key.rb'
 require 'stripe_mock/request_handlers/products.rb'
 require 'stripe_mock/request_handlers/tax_rates.rb'
 require 'stripe_mock/request_handlers/checkout_session.rb'
+require 'stripe_mock/request_handlers/mandates.rb'
 require 'stripe_mock/instance'
 
 require 'stripe_mock/test_strategies/base.rb'
