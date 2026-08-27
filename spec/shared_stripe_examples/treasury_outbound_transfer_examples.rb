@@ -43,6 +43,7 @@ shared_examples 'Treasury Outbound Transfer API' do
     expect(transfer.livemode).to eq(false)
     expect(transfer.metadata).to eq(Stripe::StripeObject.new)
     expect(transfer.returned_details).to be_nil
+    expect(transfer.tracking_details).to eq(Stripe::StripeObject.construct_from({"ach" => {"trace_id":"123071757851234"}, "type" => "ach"}))
   end
 
   describe "listing treasury outbound transfers" do
