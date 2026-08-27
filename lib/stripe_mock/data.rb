@@ -1190,6 +1190,7 @@ module StripeMock
     def self.mock_treasury_outbound_transfer(params={})
       currency = params[:currency] || StripeMock.default_currency
       id = params[:id] || 'ibt_test_transfer'
+      trace_id = params[:trace_id] || "123071757851234"
       {
         :id => id,
         :amount => 100,
@@ -1235,7 +1236,8 @@ module StripeMock
             :routing_number => "110000000"
           }
         },
-        :transaction =>  "trxn_1MtaDM2eZvKYlo2CKxgPNzLa"
+        :transaction =>  "trxn_1MtaDM2eZvKYlo2CKxgPNzLa",
+        :tracking_details => {:ach => {:trace_id => trace_id}, :type => "ach"}
       }.merge(params)
     end
 
